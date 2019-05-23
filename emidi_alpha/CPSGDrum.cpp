@@ -1,4 +1,5 @@
 #include <math.h>
+#include <cstring>
 #include "CPSGDrum.hpp"
 
 using namespace dsa;
@@ -51,7 +52,7 @@ RESULT CPSGDrum::Reset() {
     m_off_channels.push_back(i);
   }
 
-  for(i=0; i<128; i++) {
+  for(int i=0; i<128; i++) {
     m_keytable[i]=-1;
     m_velocity[i]=127;
   }

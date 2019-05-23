@@ -48,7 +48,6 @@ private:
   void _WriteReg(BYTE reg, BYTE val, UINT id);
 public:
   CPSGDrum(DWORD rate=44100, UINT m_nch=1);
-  ~CPSGDrum();
   const SoundDeviceInfo &GetDeviceInfo(void) const;
   RESULT Reset(void);
   RESULT Render(INT32 buf[2]);

@@ -1,4 +1,5 @@
 #include "CMIDIMessage.hpp"
+#include <cstring>
 
 #if defined (_MSC_VER)
 #if defined (_DEBUG)

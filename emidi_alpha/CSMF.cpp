@@ -11,9 +11,9 @@
 
 using namespace dsa;
 
-CSMF::CSMF() 
-  : m_MThd_length(0), m_format(0), m_track_num(0), m_time_base(0), 
-    m_MTrk_length(NULL), m_MTrk_data(NULL), m_MTrk_ptr(NULL), m_MTrk_running_status(NULL)
+CSMF::CSMF()
+  : m_MThd_length(0), m_format(0), m_track_num(0), m_time_base(0),
+    m_MTrk_length(NULL), m_MTrk_data(NULL), m_MTrk_running_status(NULL), m_MTrk_ptr(NULL)
 {
 }
 
@@ -67,7 +67,7 @@ bool CSMF::Load(const char *data, DWORD data_length)
     m_MTrk_ptr    = new DWORD [m_track_num];
     m_MTrk_running_status = new BYTE [m_track_num];
     m_MTrk_data = new char * [m_track_num];
-  } catch (std::bad_alloc) { 
+  } catch (std::bad_alloc &) { 
     return false; 
   }
   memset(m_MTrk_data,0, sizeof(char *) * m_track_num);

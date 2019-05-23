@@ -12,7 +12,11 @@
 #ifndef _BASETSD_H_
 typedef unsigned char  BYTE;
 typedef unsigned short WORD;
-typedef unsigned long  DWORD;
+#ifdef _WIN32
+typedef unsigned long DWORD;
+#else
+typedef unsigned int DWORD;
+#endif
 typedef unsigned char  UINT8;
 typedef unsigned short UINT16;
 typedef unsigned int  UINT32;
@@ -30,13 +34,13 @@ namespace dsa {
 
 enum RESULT { FAILURE=0, SUCCESS=1 };
 // Exception of so-called 'Runtime Errors'.
-class RuntimeException { 
+class RuntimeException {
 public:
-  const bool m_fatal;
   const char *m_message;
   const char *m_file;
   const int m_lineno;
-  RuntimeException(const char *message, const char *file, int lineno, bool fatal=true) 
+  const bool m_fatal;
+  RuntimeException(const char *message, const char *file, int lineno, bool fatal=true)
     : m_message(message), m_file(file), m_lineno(lineno), m_fatal(fatal) {}
 };
 

@@ -45,9 +45,9 @@ public:
   enum ExceptionID { SMF_END_TRACK=0, SMF_INVALID_TRACK, SMF_UNKNOWN_ERROR };
   CSMF_Exception(ExceptionID id) : m_id(id) {}
   ExceptionID m_id;
-  const char *c_str () const { 
-    static char *Msg[] = {"Track buffer is end.", "Invalid Track number.", "Unknown Error"};
-    return Msg[m_id]; 
+  const char *c_str () const {
+    static const char *Msg[] = {"Track buffer is end.", "Invalid Track number.", "Unknown Error"};
+    return Msg[m_id];
   }
 };
 
