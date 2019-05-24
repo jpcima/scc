@@ -63,6 +63,9 @@ public:
   RESULT Render(INT32 buf[2]);
 
   RESULT SetDrumChannel(int midi_ch, int enable);
+
+  void ResetControllers();
+  void AllNotesOff();
 };
 
 } // namespace dsa

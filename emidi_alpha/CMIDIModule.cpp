@@ -18,23 +18,15 @@ RESULT CMIDIModule::Reset() {
 
   m_off_channels.clear();
 
-  {
   for(int i=0;i<16;i++) {
     m_used_channels[i].clear();
-    m_program[i] = 3;
-    m_volume[i] = 127;
-    m_bend[i] = 0;
-    m_bend_coarse[i] = 0;
-    m_bend_fine[i] = 0;
-    m_bend_range[i] = (2<<7);
-    m_pan[i] = 64;
-    m_RPN[i] = m_NRPN[i] = 0;
-	m_drum[i] = 0;
+    m_drum[i] = 0;
     for(int j=0;j<128;j++)
       m_keyon_table[i][j] = -1;
   }
-  }
   m_drum[9] = 1;
+
+  ResetControllers();
 
   m_entry_mode = 0;
 
@@ -309,21 +301,37 @@ RESULT CMIDIModule::SendMIDIMsg(const CMIDIMsg &msg) {
 
   if(m_device == NULL) return FAILURE;
 
-  if(msg.m_type == CMIDIMsg::NOTE_OFF) {
+  switch(msg.m_type) {
+  case CMIDIMsg::NOTE_OFF:
     NoteOff(msg.m_ch, msg.m_data[0], msg.m_data[1]);
-  } else if(msg.m_type == CMIDIMsg::NOTE_ON) {
+    break;
+  case CMIDIMsg::NOTE_ON:
     if(msg.m_data[1] == 0)
       NoteOff(msg.m_ch, msg.m_data[0], msg.m_data[1]);
     else
       NoteOn(msg.m_ch, msg.m_data[0], msg.m_data[1]);
-  } else if(msg.m_type == CMIDIMsg::PROGRAM_CHANGE) {
+    break;
+  case CMIDIMsg::PROGRAM_CHANGE:
     m_program[msg.m_ch] = msg.m_data[0];
-  } else if(msg.m_type == CMIDIMsg::CONTROL_CHANGE) {
+    break;
+  case CMIDIMsg::CONTROL_CHANGE:
     ControlChange(msg.m_ch, msg.m_data[0], msg.m_data[1]);
-  } else if(msg.m_type == CMIDIMsg::PITCH_BEND_CHANGE ) {
+    break;
+  case CMIDIMsg::PITCH_BEND_CHANGE:
     PitchBend(msg.m_ch, msg.m_data[0], msg.m_data[1]);
-  } else if(msg.m_type == CMIDIMsg::CHANNEL_PRESSURE ) {
+    break;
+  case CMIDIMsg::CHANNEL_PRESSURE:
     ChannelPressure(msg.m_ch, msg.m_data[0]);
+    break;
+  case CMIDIMsg::RESET_ALL_CONTROLLERS:
+    ResetControllers();
+    break;
+  case CMIDIMsg::ALL_NOTES_OFF:
+  case CMIDIMsg::ALL_SOUND_OFF:
+    AllNotesOff();
+    break;
+  default:
+    break;
   }
   return SUCCESS;
 }
@@ -331,4 +339,27 @@ RESULT CMIDIModule::SendMIDIMsg(const CMIDIMsg &msg) {
 RESULT CMIDIModule::SetDrumChannel(int midi_ch, int enable) {
 	m_drum[midi_ch] = enable;
 	return SUCCESS;
+}
+
+void CMIDIModule::ResetControllers()
+{
+  for(int i=0;i<16;i++) {
+    m_program[i] = 3;
+    m_volume[i] = 127;
+    m_bend[i] = 0;
+    m_bend_coarse[i] = 0;
+    m_bend_fine[i] = 0;
+    m_bend_range[i] = (2<<7);
+    m_pan[i] = 64;
+    m_RPN[i] = m_NRPN[i] = 0;
+  }
+}
+
+void CMIDIModule::AllNotesOff()
+{
+  for(int midi_ch=0;midi_ch<16;++midi_ch) {
+    for(int note=0;note<128;++note) {
+      NoteOff(midi_ch, note, 0);
+    }
+  }
 }
