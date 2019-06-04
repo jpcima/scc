@@ -27,7 +27,7 @@ private:
 public:
   CEnvelope(UINT ch);
   ~CEnvelope();
-  void Reset(UINT32 clock=44100, UINT32 rate=60);
+  void Reset(DWORD clock=44100, DWORD rate=60);
   void KeyOn(UINT ch);
   void KeyOff(UINT ch);
   bool Update();
