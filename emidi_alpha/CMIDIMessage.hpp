@@ -48,7 +48,8 @@ public:
   MsgType m_type;     // The Msg identifier
   UINT m_ch;               // The channel
   BYTE *m_data;           // The data sequence
-  DWORD m_length;         // The length of the data sequence 
+  DWORD m_length;         // The length of the data sequence
+  BYTE m_buf[4];
   CMIDIMsg(MsgType type=UNKNOWN_MESSAGE,int ch=0, const BYTE *data=NULL, DWORD length=0);
   CMIDIMsg(const CMIDIMsg &);
   ~CMIDIMsg();

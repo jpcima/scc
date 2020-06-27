@@ -9,27 +9,30 @@
 
 using namespace dsa;
 
-CMIDIMsg::CMIDIMsg(MsgType type,int ch, const BYTE *data, DWORD length) 
-  : m_type(type), m_ch(ch), m_length(length)
+CMIDIMsg::CMIDIMsg(MsgType type,int ch, const BYTE *data, DWORD length)
+  : m_type(type), m_ch(ch), m_data(m_buf), m_length(length)
 {
-  if(length) {
+  if(length > sizeof(m_buf)) {
     m_data = new BYTE [length];
-    memcpy(m_data,data,(size_t)length);
-  } else {
-    m_data = NULL;
   }
+  memcpy(m_data,data,(size_t)length);
 }
 
 CMIDIMsg &CMIDIMsg::operator = (const CMIDIMsg &arg) {
+  if(this == &arg) {
+    return *this;
+  }
   m_type = arg.m_type;
   m_ch = arg.m_ch;
   m_length = arg.m_length;
-  delete [] m_data;
-  if(m_length) {
+  if(m_data != m_buf) {
+    delete [] m_data;
+    m_data = m_buf;
+  }
+  if(m_length > sizeof(m_buf)) {
     m_data = new BYTE [m_length];
-    memcpy(m_data, arg.m_data, (size_t)arg.m_length);
-  } else 
-    m_data = NULL;
+  }
+  memcpy(m_data, arg.m_data, (size_t)arg.m_length);
   return (*this);
 }
 
@@ -37,16 +40,17 @@ CMIDIMsg::CMIDIMsg(const CMIDIMsg &arg) {
   m_type = arg.m_type;
   m_ch = arg.m_ch;
   m_length = arg.m_length;
-  if(m_length) {
+  m_data = m_buf;
+  if(m_length > sizeof(m_buf)) {
     m_data = new BYTE [m_length];
-    memcpy(m_data, arg.m_data, (size_t)arg.m_length);
-  } else {
-    m_data = NULL;
   }
+  memcpy(m_data, arg.m_data, (size_t)arg.m_length);
 }
 
-CMIDIMsg::~CMIDIMsg() { 
-  delete [] m_data; 
+CMIDIMsg::~CMIDIMsg() {
+  if(m_data != m_buf) {
+    delete [] m_data;
+  }
 }
 
 const char *CMIDIMsg::c_str() const {
