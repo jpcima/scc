@@ -82,7 +82,7 @@ static BYTE perc_table[128] =
 
 static int perc_att[5] = {
   // HH, CYM, TOM, S.D, B.D
-      3,   3,  -1,   3,  -1
+      3,   3,  -1,  -1,  -1
 };
 
 COpllDevice::COpllDevice(DWORD rate, UINT nch) { 
