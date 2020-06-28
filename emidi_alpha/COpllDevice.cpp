@@ -80,6 +80,11 @@ static BYTE perc_table[128] =
    0, 0, 0, 0, 0, 0, 0, 0  //120- 
 };
 
+static int perc_att[5] = {
+  // HH, CYM, TOM, S.D, B.D
+      3,   3,  -1,   3,  -1
+};
+
 COpllDevice::COpllDevice(DWORD rate, UINT nch) { 
 
   if(nch==2) 
@@ -312,7 +317,7 @@ void COpllDevice::_PercUpdateVolume(UINT8 note) {
   if(note<1 || note>5)
     throw RuntimeException("Invalid Drum Tone",__FILE__,__LINE__);
 
-  int vol = 13 - m_pi.volume/16 - m_pi.velocity[note-1]/16;
+  int vol = 14 - m_pi.volume/16 - m_pi.velocity[note-1]/16 + perc_att[note-1];
   if(vol<0) 
     m_pi.vcache[note-1] = 0;
   else if(15<vol) 
