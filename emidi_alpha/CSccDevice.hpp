@@ -1,11 +1,11 @@
 #ifndef __CSCC_DEVICE_HPP__
 #define __CSCC_DEVICE_HPP__
-#include <deque>
 namespace dsa { namespace C {
 #include "device/emu2212.h"
 }};
 #include "DsaCommon.hpp"
 #include "ISoundDevice.hpp"
+#include "CCircularBuffer.hpp"
 
 namespace dsa {
 
@@ -40,7 +40,7 @@ private:
   BYTE m_reg_cache[2][0x100]; 
   UINT16 m_note2freq[128];
   ChannelInfo m_ci[5];
-  std::deque<INT32> m_rbuf[2]; // The rendering buffer
+  CCircularBuffers<INT32, 2> m_rbuf; // The rendering buffer
   void _UpdateVolume(UINT ch);
   void _UpdateFreq(UINT ch);
   void _UpdateProgram(UINT ch);

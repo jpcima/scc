@@ -1,8 +1,8 @@
 #ifndef __CDeviceOpll_H__
 #define __CDeviceOpll_H__
-#include <deque>
 
 #include "ISoundDevice.hpp"
+#include "CCircularBuffer.hpp"
 
 namespace dsa {
 
@@ -40,7 +40,7 @@ private:
   BYTE m_reg_cache[2][0x80];
   ChannelInfo m_ci[9];
   PercInfo m_pi;
-  std::deque<INT32> m_rbuf[2]; // The rendering buffer
+  CCircularBuffers<INT32, 2> m_rbuf; // The rendering buffer
 
   void _UpdateFreq(UINT ch);
   void _UpdateVolume(UINT ch);

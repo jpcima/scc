@@ -85,7 +85,7 @@ static int perc_att[5] = {
       3,   3,  -1,  -1,  -1
 };
 
-COpllDevice::COpllDevice(DWORD rate, UINT nch) { 
+COpllDevice::COpllDevice(DWORD rate, UINT nch) : m_rbuf(8192) {
 
   if(nch==2) 
     m_nch = 2;
@@ -185,8 +185,8 @@ void COpllDevice::_WriteReg(BYTE reg, BYTE val, INT pan) {
     m_reg_cache[pan][reg] = val;
   
     // At least one calc() method must be invoked between two sequence of writeReg().
-    if(m_rbuf[pan].size()<8192) {
-      m_rbuf[pan].push_back( OPLL_calc(m_opll[pan]) );
+    if(!m_rbuf[pan].full()) {
+      m_rbuf[pan].push( OPLL_calc(m_opll[pan]) );
     } else {
       throw RuntimeException("Buffer Overflow",__FILE__,__LINE__);
     }
@@ -199,8 +199,7 @@ RESULT COpllDevice::Render(INT32 buf[2]) {
     if(m_rbuf[i].empty())
       buf[i] = OPLL_calc(m_opll[i]);
     else {
-      buf[i] = m_rbuf[i].front();
-      m_rbuf[i].pop_front();
+      buf[i] = m_rbuf[i].pop();
     }
   }
   if(m_nch<2) 

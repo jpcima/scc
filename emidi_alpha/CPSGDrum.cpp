@@ -12,7 +12,7 @@ static CPSGDrum::Instrument inst_table[128] = {
      {  60,  -2,   2,  {  0,  80,  0,  0, 80 } }, // SD
 };
 
-CPSGDrum::CPSGDrum(DWORD rate, UINT nch) : m_env(6) {
+CPSGDrum::CPSGDrum(DWORD rate, UINT nch) : m_env(6), m_rbuf(8192) {
 
   if(nch==2) m_nch = 2; else m_nch = 1;
   m_rate = rate;
@@ -64,8 +64,8 @@ void CPSGDrum::_WriteReg(BYTE reg, BYTE val, UINT id) {
   if(m_reg_cache[id][reg]!=val) {
     PSG_writeReg(m_psg[id], reg, val);
     m_reg_cache[id][reg] = val;  
-    if(m_rbuf[id].size()<8192) {
-      m_rbuf[id].push_back(PSG_calc(m_psg[id])<<16);
+    if(!m_rbuf[id].full()) {
+      m_rbuf[id].push(PSG_calc(m_psg[id])<<16);
       if(m_env.Update()) {
         for(int ch=0;ch<6;ch++) _UpdateVolume(ch);
       }
@@ -96,8 +96,7 @@ RESULT CPSGDrum::Render(INT32 buf[2]) {
         for(int ch=0;ch<6;ch++) _UpdateVolume(ch);
       }
     } else
-      buf[0] += m_rbuf[i].front();
-    m_rbuf[i].pop_front();
+      buf[0] += m_rbuf[i].pop();
   }
   buf[0]<<=1;
   buf[1] = buf[0];

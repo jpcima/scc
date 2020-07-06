@@ -72,7 +72,7 @@ void CSccDevice::_CalcEnvelope(void) {
 
 }
 
-CSccDevice::CSccDevice(DWORD rate, UINT nch){
+CSccDevice::CSccDevice(DWORD rate, UINT nch) : m_rbuf(8192) {
 
   if(nch==2) m_nch = 2; else m_nch = 1;
   m_rate = rate;
@@ -168,8 +168,8 @@ void CSccDevice::_WriteReg(BYTE reg, BYTE val, INT pan) {
   if(m_reg_cache[pan][reg]!=val) {
     SCC_writeReg(m_scc[pan], reg, val);
     m_reg_cache[pan][reg] = val;  
-    if(m_rbuf[pan].size()<8192) {
-      m_rbuf[pan].push_back(SCC_calc(m_scc[pan]));
+    if(!m_rbuf[pan].full()) {
+      m_rbuf[pan].push(SCC_calc(m_scc[pan]));
       if (!pan) _CalcEnvelope();
     } else {
       throw RuntimeException("Buffer Overflow",__FILE__,__LINE__);
@@ -184,8 +184,7 @@ RESULT CSccDevice::Render(INT32 buf[2]) {
       buf[i] = SCC_calc(m_scc[i]);
 	  if (!i) _CalcEnvelope();
     } else {
-      buf[i] = m_rbuf[i].front();
-      m_rbuf[i].pop_front();
+      buf[i] = m_rbuf[i].pop();
     }
   }
   if(m_nch<2) 

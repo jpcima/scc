@@ -6,6 +6,7 @@ namespace dsa { namespace C {
 #include "DsaCommon.hpp"
 #include "ISoundDevice.hpp"
 #include "CEnvelope.hpp"
+#include "CCircularBuffer.hpp"
 
 namespace dsa {
 
@@ -40,7 +41,7 @@ private:
   UINT8 m_volume;
   UINT8 m_velocity[128];
   INT m_keytable[128];
-  std::deque<INT32> m_rbuf[2];
+  CCircularBuffers<INT32, 2> m_rbuf;
   void _UpdateMode(UINT ch);
   void _UpdateVolume(UINT ch);
   void _UpdateFreq(UINT ch);
